@@ -313,8 +313,8 @@ public class War_Simulator {
         // Get the country to output the winner and output the casualties on both sides.
         double totalWins = (double)(aWinCounter + dWinCounter);
         
-        aCasualties = aArmySize * ((double)aWinCounter / totalWins);
-        dCasualties = dArmySize * ((double)dWinCounter / totalWins);
+        aCasualties = aArmySize * ((double)dWinCounter / totalWins);
+        dCasualties = dArmySize * ((double)aWinCounter / totalWins);
                 
         System.out.println();
         

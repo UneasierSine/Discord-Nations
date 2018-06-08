@@ -14,7 +14,8 @@ package war_simulator;
 import java.util.Scanner;
 
 public class War_Simulator {
-
+    
+    // Round numbers to the nearest integer value.
     public static int roundNumber(double value)
     {
         double leftOver = value % ((int)value);
@@ -22,16 +23,36 @@ public class War_Simulator {
         return (int)value;
     }
     
-    // Add indices to the array with "true" boolean values.
-    public static void addWinningIndices(boolean[] given, int startingIndex, int ordersToFill)
+    // Choose a random value between two double variables.
+    public static double randomDouble(double start, double end)
     {
-        int i = 0;
+        return ((Math.random() * (end - start)) + start);
+    }
+    
+    // Add indices to the array with "true" boolean values.
+    public static void addAWinningIndices(boolean[] given, int ordersToFill)
+    {
+        int index = given.length;
+        
+        while(ordersToFill != 0)
+        {
+            given[index] = true;
+            index++;
+            ordersToFill--;
+        }
     }
     
     // Add indices to the array with "false" boolean values.
-    public static void addLosingIndices(boolean[] given, int startingIndex, int ordersToFill)
+    public static void addDWinningIndices(boolean[] given, int ordersToFill)
     {
-        int i = 0;
+        int index = given.length;
+        
+        while(ordersToFill != 0)
+        {
+            given[index] = false;
+            index++;
+            ordersToFill--;
+        }
     }
     
     // Return a random outcome from the variable.
@@ -55,6 +76,11 @@ public class War_Simulator {
         
         int aArmySize, dArmySize;
         double aMilitarySpending, dMilitarySpending;
+        int aSpendingWins, dSpendingWins;
+        
+        // Start both sides on an equal footing (and prevent errors).
+        probableOutcomes[0] = true;
+        probableOutcomes[1] = false;
         
         // Introduction text output and input.
         System.out.println("Welcome to the Discord Nations War Simulator.");
@@ -76,16 +102,24 @@ public class War_Simulator {
         System.out.print("What region or city is this fighting taking place?");
         location = scanner.nextLine();
         
-        // Starting the factors of the outcome. Get the ratio of military spending of the two.
+        /** Starting the factors of the outcome.
+         * The following are the parameters taken into account:
+         * Military Spending
+         */ 
+        
+        //Get the ratio of military spending of the two.
         System.out.println("These are now the factors that will affect the fighting outcome.");
         System.out.print("Give the attacker's annual military spending in millions of USD. Use a decimal.");
         aMilitarySpending = scanner.nextDouble();
         System.out.print("Give the attacker's annual military spending in millions of USD. Use a decimal.");
         dMilitarySpending = scanner.nextDouble();
         
+        aSpendingWins = (int)(20 * (aMilitarySpending / (aMilitarySpending + dMilitarySpending)));
+        dSpendingWins = (int)(20 * (dMilitarySpending / (aMilitarySpending + dMilitarySpending)));
+        addAWinningIndices(probableOutcomes, aSpendingWins);
+        addDWinningIndices(probableOutcomes, dSpendingWins);
+        
         // Get the country to output the winner and output the casualties on both sides.
         System.out.println(chooseRandomResult(probableOutcomes));
     }
-
-    
 }

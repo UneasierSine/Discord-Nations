@@ -1,1 +1,7 @@
 Uh huh. It's gonna be in here.
+
+06/07/2018
+I typed out all of what I think will make up the code for this project. Tomorrow I will be testing and debugging it. Although I still need
+a way to present the text, so I will probably look into Java's GUI library Swing.
+It was surprisingly simple to do the indivudal calculations, although I worry about the availability of some of this information.
+Right now is is about 11:00 PM, and I have been up since 6:00 AM, so I am going to call it a day for now.

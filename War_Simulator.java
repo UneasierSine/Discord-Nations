@@ -11,9 +11,14 @@
  */
 package war_simulator;
 
+import java.text.DecimalFormat;
 import java.util.Scanner;
 
 public class War_Simulator {
+    
+    public static int counter = 2;
+    public static int aWinCounter = 1;
+    public static int dWinCounter = 1;
     
     // Round numbers to the nearest integer value.
     public static int roundNumber(double value)
@@ -39,14 +44,13 @@ public class War_Simulator {
     // Add indices to the array with "true" boolean values.
     public static void addAWinningIndices(boolean[] given, int ordersToFill)
     {
-        int index = given.length;
-        
         if(ordersToFill > 0)
         {    
             while(ordersToFill != 0){
-                given[index] = true;
-                index++;
+                given[counter] = true;
+                counter++;
                 ordersToFill--;
+                aWinCounter++;
             }
         }
     }
@@ -54,14 +58,13 @@ public class War_Simulator {
     // Add indices to the array with "false" boolean values.
     public static void addDWinningIndices(boolean[] given, int ordersToFill)
     {
-        int index = given.length;
-        
         if(ordersToFill > 0)
         {    
             while(ordersToFill != 0){
-                given[index] = false;
-                index++;
+                given[counter] = false;
+                counter++;
                 ordersToFill--;
+                dWinCounter++;
             }
         }
     }
@@ -69,7 +72,7 @@ public class War_Simulator {
     // Return a random outcome from the variable.
     public static boolean chooseRandomResult(boolean[] given)
     {
-        int indicesTotal = given.length;
+        int indicesTotal = counter - 1;
         int randomIndex = (int)(Math.random() * indicesTotal);
         return given[randomIndex];
     }   
@@ -79,9 +82,13 @@ public class War_Simulator {
     {
         // Initialize variables and objects used in the program.
         Scanner scanner = new Scanner(System.in);
+        DecimalFormat formatter = new DecimalFormat("#0.0");
         
-        int aWinCounter = 0;
-        boolean[] probableOutcomes = new boolean[100];
+        boolean probableOutcomes[] = new boolean[2000];
+        
+        for(int i = 0; i < probableOutcomes.length; i++){
+            probableOutcomes[i] = false;
+        }
         
         boolean attackSuccessful;
         double aCasualties, dCasualties;
@@ -117,16 +124,16 @@ public class War_Simulator {
         System.out.println("These first few prompts are not going affect the outcome. They are just to assign names to the belligerents and the region.");
         
         // Get the name of the attacking nation.
-        System.out.print("Enter the name of the attacking nation.");
+        System.out.println("Enter the name of the attacking nation.");
         attacker = scanner.nextLine();
         
         // Get the name of the defending nation.
-        System.out.print("Enter the name of the defending nation.");
-        defender = scanner.next();
+        System.out.println("Enter the name of the defending nation.");
+        defender = scanner.nextLine();
         
         // Get the name of the region or city of fighting.
-        System.out.print("What region or city is this fighting taking place?");
-        location = scanner.next();
+        System.out.println("What region or city is this fighting taking place?");
+        location = scanner.nextLine();
         
         /** These are the factors of the outcome of the battle or campaign.
          * The following are the parameters taken into account:
@@ -152,7 +159,6 @@ public class War_Simulator {
         dMilitarySpending = scanner.nextDouble();
         
         aWins = roundNumber(10 * (aMilitarySpending / (aMilitarySpending + dMilitarySpending)));
-        aWinCounter += aWins;
         dWins = 10 - aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
@@ -165,7 +171,6 @@ public class War_Simulator {
         dArmySize = scanner.nextDouble();
         
         aWins = roundNumber(50 * (aArmySize / (aArmySize + dArmySize)));
-        aWinCounter += aWins;
         dWins = 50 - aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
@@ -187,7 +192,6 @@ public class War_Simulator {
         }else{
             dWins += 2;
         }
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -211,7 +215,6 @@ public class War_Simulator {
         
         if(aRebellious != 0) dWins += 5;
         if(dRebellious != 0) aWins += 5;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -230,7 +233,6 @@ public class War_Simulator {
         if(aSuccesses != 0) aWins += 5;
         if(dFails != 0) aWins += 5;
         if(dSuccesses != 0) dWins += 5;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -243,7 +245,6 @@ public class War_Simulator {
         
         aWins = roundNumber(20.0 * (aEquipment / (aEquipment + dEquipment)));
         dWins = 20 - aWins;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -257,11 +258,10 @@ public class War_Simulator {
         clearWins(aWins, dWins);
         
         // Account for the reason of war.
-        System.out.println("Enter 1 if " + attacker + " was invaded by " + defender + "prior to this battle. If " + attacker + " is invading,\nis there a valid cassus belli? (1 or 0)");
+        System.out.println("Enter 1 if " + attacker + " was invaded by " + defender + " prior to this battle. If " + attacker + " is invading, is there a valid cassus belli? (1 or 0)");
         warReason = scanner.nextInt();
         
         if(warReason != 0) aWins += 4;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         clearWins(aWins, dWins);
         
@@ -281,7 +281,6 @@ public class War_Simulator {
         
         aWins = roundNumber((7.0 * (aSupplyLine / (aSupplyLine + dSupplyLine))));
         dWins = 7 - aWins;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -295,7 +294,6 @@ public class War_Simulator {
         }else{
             dWins +=6;
         }
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
@@ -308,25 +306,57 @@ public class War_Simulator {
         
         if(aGovernmentPopularity != 0) aWins += 9;
         if(dGovernmentPopularity != 0) dWins += 9;
-        aWinCounter += aWins;
         addAWinningIndices(probableOutcomes, aWins);
         addDWinningIndices(probableOutcomes, dWins);
         clearWins(aWins, dWins);
         
         // Get the country to output the winner and output the casualties on both sides.
-        attackSuccessful = chooseRandomResult(probableOutcomes);
-        aCasualties = aArmySize * (aWinCounter / probableOutcomes.length);
-        dCasualties = dArmySize * ((probableOutcomes.length - aWinCounter) / probableOutcomes.length);
-                
-        System.out.println("Casualties:");
-        System.out.println(attacker + ": " + (aCasualties * 1000));
-        System.out.println(defender + ": " + (dCasualties * 1000));
+        double totalWins = (double)(aWinCounter + dWinCounter);
         
-        if(attackSuccessful == true){
-            System.out.println("The flag of " + attacker + " flies over " + location + "!");
-        }else{
-            System.out.println("The flag of " + defender + "flies over " + location + "!");
+        aCasualties = aArmySize * ((double)aWinCounter / totalWins);
+        dCasualties = dArmySize * ((double)dWinCounter / totalWins);
+                
+        System.out.println();
+        
+        int aPhaseWins = 0; 
+        int dPhaseWins = 0;
+        for(int i = 0; i <= 5; i++){
+            
+            attackSuccessful = chooseRandomResult(probableOutcomes);
+            if(attackSuccessful == true){
+                aPhaseWins++;
+                System.out.println(attacker + " won Phase " + (i+1) + " of the battle!");
+            }else{
+                dPhaseWins++;
+                System.out.println(defender + " won Phase " + (i+1) + " of the battle!");
+            }
         }
+        if(aPhaseWins > dPhaseWins){
+            System.out.println();
+            System.out.println("The flag of " + attacker + " flies over " + location + "!");
+            aCasualties *= 0.8;
+            aCasualties = randomDouble((aCasualties * 0.3), (aCasualties * 0.75));
+            dCasualties = randomDouble((dCasualties * 0.6), dCasualties);
+        }
+        if(aPhaseWins < dPhaseWins){
+            System.out.println();
+            System.out.println("The flag of " + defender + " flies over " + location + "!");
+            dCasualties *= 0.8;
+            aCasualties = randomDouble((aCasualties * 0.6), aCasualties);
+            dCasualties = randomDouble((dCasualties * 0.3), (dCasualties * 0.75));
+        }
+        if(aPhaseWins == dPhaseWins){
+            System.out.println();
+            System.out.println("The battle of " + location + " ends in a stalemate!");
+            aCasualties = randomDouble((aCasualties * 0.25), (aCasualties * 0.75));
+            dCasualties = randomDouble((dCasualties * 0.25), (dCasualties * 0.75));
+        }
+        
+        System.out.println();
+        System.out.println("Casualties:");
+        System.out.println(attacker + ": " + formatter.format(aCasualties) + "K");
+        System.out.println(defender + ": " + formatter.format(dCasualties) + "K");
+        System.out.println();
         
         System.out.println("This concludes the Battle of " + location + ".");
     }

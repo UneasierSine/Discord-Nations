@@ -1,0 +1,2 @@
+Basically this simulation will take a certain type of deal, for example a trade deal or development and will calculate the gdp growth via
+weighted dice.

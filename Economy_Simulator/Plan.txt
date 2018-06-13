@@ -8,5 +8,6 @@ Economy Simulation:
     the value of the trade deal and divide it by the total imports/exports of the country. Then you will take the average gdp of the 
     country and do GDP mod dice roll.
   Building Simulation:
-    there will be x paramters to be inputted into the simulation. The parameters we take in will be gdp of country, 
+    There will be x paramters to be inputted into the simulation. The parameters we take in will be gdp of country, labor force by 
+    percentage of population, types of materials needed to be imported for construction, 
     

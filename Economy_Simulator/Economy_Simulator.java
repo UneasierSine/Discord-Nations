@@ -7,8 +7,7 @@ public class Economy_Simulator {
 	static Scanner scanner = new Scanner(System.in);
 	
 	static String growth, selection;
-	static long gdpA, gdpB, tradeValue, total;
-	static double percentOfExport, average, last;
+	static double percentOfExport, average, last, gdpA, gdpB, tradeValue, total;;
 	
 	//Gets a random number from 1 to 10
 	public static int randomNumber() {
@@ -17,13 +16,13 @@ public class Economy_Simulator {
 	
 	public static void economySimulation() {
 		System.out.println("Please input the GDP of the first country in dollars:");
-		gdpA = scanner.nextLong();
+		gdpA = scanner.nextDouble();
 		System.out.println("Please input the GDP of the second country in dollars:");
-		gdpB = scanner.nextLong();
+		gdpB = scanner.nextDouble();
 		System.out.println("Please input the value of the trade deal in dollars:");
-		tradeValue = scanner.nextLong();
+		tradeValue = scanner.nextDouble();
 		System.out.println("Please input the total imports/exports of the country that is recieving the trade deal in dollars:");
-		total = scanner.nextLong();
+		total = scanner.nextDouble();
 		
 		percentOfExport = tradeValue / total;
 		average = (gdpA + gdpB) / 2;

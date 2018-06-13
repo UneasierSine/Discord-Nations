@@ -7,27 +7,29 @@ public class Economy_Simulator {
 	static Scanner scanner = new Scanner(System.in);
 	
 	static String growth, selection;
-	static int gdpA, gdpB, tradeValue, total;
-	static float percentOfExport, average, last;
+	static long gdpA, gdpB, tradeValue, total;
+	static double percentOfExport, average, last;
 	
-	//Gets a random number from 0 to 9
+	//Gets a random number from 1 to 10
 	public static int randomNumber() {
-		return ((int)((Math.random()) * 10));
+		return ((int)(((Math.random()) * 10) + 1));
 	}
 	
 	public static void economySimulation() {
 		System.out.println("Please input the GDP of the first country in dollars:");
-		gdpA = scanner.nextInt();
+		gdpA = scanner.nextLong();
 		System.out.println("Please input the GDP of the second country in dollars:");
-		gdpB = scanner.nextInt();
+		gdpB = scanner.nextLong();
 		System.out.println("Please input the value of the trade deal in dollars:");
-		tradeValue = scanner.nextInt();
+		tradeValue = scanner.nextLong();
 		System.out.println("Please input the total imports/exports of the country that is recieving the trade deal in dollars:");
-		total = scanner.nextInt();
+		total = scanner.nextLong();
 		
 		percentOfExport = tradeValue / total;
 		average = (gdpA + gdpB) / 2;
 		last = (average * percentOfExport) % randomNumber();
+		
+		System.out.println(last);
 	}
 	
 	public static void researchSimulation() {

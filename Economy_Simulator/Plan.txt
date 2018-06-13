@@ -6,7 +6,7 @@ Economy Simulation:
     There will be four parameters to be inputted into the simulation. These parameters will be country gdp 1, country gdp 2, trade deal
     value, and total imports/ exports of the country. The simulation will work by you taking the average of the gdp. Then, you will take 
     the value of the trade deal and divide it by the total imports/exports of the country. Then you will take the average gdp of the 
-    country and do GDP mod dice roll.
+    country and multiply it by the percent of trade in country and do number mod dice roll.
   Building Simulation:
     There will be x paramters to be inputted into the simulation. The parameters we take in will be gdp of country, labor force by 
     percentage of population, types of materials needed to be imported for construction, 

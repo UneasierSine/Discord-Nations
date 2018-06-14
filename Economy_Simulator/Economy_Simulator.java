@@ -11,7 +11,7 @@ public class Economy_Simulator {
 	
 	//Gets a random number from 1 to 10
 	public static int randomNumber() {
-		return ((int)(((Math.random()) * 10) + 1));
+		return ((int)(((Math.random()) * 10) + 2));
 	}
 	
 	public static void economySimulation() {
@@ -26,7 +26,7 @@ public class Economy_Simulator {
 		
 		percentOfExport = tradeValue / total;
 		average = (gdpA + gdpB) / 2;
-		last = (average * percentOfExport) % randomNumber();
+		last = (average * percentOfExport) * (randomNumber() * percentOfExport);
 		
 		System.out.println(last);
 	}

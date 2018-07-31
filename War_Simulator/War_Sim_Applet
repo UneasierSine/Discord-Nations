@@ -1,0 +1,617 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.JSlider;
+import javax.swing.event.*;
+
+public class War_Sim_Applet extends Applet implements ActionListener, ItemListener, ChangeListener {
+
+    public static int counter = 2;
+    public static int aWinCounter = 1;
+    public static int dWinCounter = 1;
+    
+    // Round numbers to the nearest integer value.
+    public static int roundNumber(double value)
+    {
+        double leftOver = value % ((int)value);
+        if(leftOver >= 0.5) return (int)value + 1;
+        return (int)value;
+    }
+    
+    // Choose a random value between two double variables.
+    public static double randomDouble(double start, double end)
+    {
+        return ((Math.random() * (end - start)) + start);
+    }
+    
+    // Clear the win numbers to prevent errors.
+    public static void clearWins(int a, int b)
+    {
+        a = 0;
+        b = 0;
+    }
+    
+    // Add indices to the array with "true" boolean values.
+    public static void addAWinningIndices(boolean[] given, int ordersToFill)
+    {
+        if(ordersToFill > 0)
+        {    
+            while(ordersToFill != 0){
+                given[counter] = true;
+                counter++;
+                ordersToFill--;
+                aWinCounter++;
+            }
+        }
+    }
+    
+    // Add indices to the array with "false" boolean values.
+    public static void addDWinningIndices(boolean[] given, int ordersToFill)
+    {
+        if(ordersToFill > 0)
+        {    
+            while(ordersToFill != 0){
+                given[counter] = false;
+                counter++;
+                ordersToFill--;
+                dWinCounter++;
+            }
+        }
+    }
+    
+    // Return a random outcome from the variable.
+    public static boolean chooseRandomResult(boolean[] given)
+    {
+        int indicesTotal = counter - 1;
+        int randomIndex = (int)(Math.random() * indicesTotal);
+        return given[randomIndex];
+    }   
+    
+    // Run the main looping function.
+    public static String[] run(String attacker,String defender,String location,double aMilitarySpending,double dMilitarySpending,double aArmySize, double dArmySize,int aTank,int dTank,int aArmor,int dArmor,int aArtillery,int dArtillery,int aBs,int dBs,int aDC,int dDC,int aAC,int dAC,int aF,int dF,int aO,int dO,int aFp,int aBp,int aAh,int aTh,int dFp,int dBp,int dAh,int dTh,int terrain,int climate,int mountains,int aEquipment,int dEquipment,int guerrilaDamage,int aSupplyLine,int dSupplyLine,int aCounterAttack,int dCounterAttack)
+    {
+        /*dTank,int aArmor,int dArmor,int aArtillery,int dArtillery,int aBs,int dBs,int aDC,int dDC,int aAC,int dAC,int aF,int dF,int aO,int dO,int aFp,int aBp,int aAh,int aTh,int dFp,int dBp,int dAh,int dTh*/
+        double aTankCas,dTankCas,aArmorCas,dArmorCas,aArtilleryCas,dArtilleryCas,aBsCas,dBsCas,aDCCas,dDCCas,aACCas,dACCas,aFCas,dFCas,dOCas,aOCas,aFpCas,dFpCas,aBpCas,dBpCas,aAhCas,dAhCas,aThCas,dThCas;
+        
+        boolean probableOutcomes[] = new boolean[20000000];
+        
+        for(int i = 0; i < probableOutcomes.length; i++){
+            probableOutcomes[i] = false;
+        }
+        
+        boolean attackSuccessful;
+        double aCasualties = 0.0, dCasualties = 0.0;
+        
+        int aWins=0, dWins=0;
+        
+        // Start both sides on an equal footing (and prevent errors).
+        probableOutcomes[0] = true;
+        probableOutcomes[1] = false;
+        
+        aWins = roundNumber(10 * (aMilitarySpending / (aMilitarySpending + dMilitarySpending)));
+        dWins = 10 - aWins;
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+             
+        aWins = (int)((aArmySize / dArmySize) * aArmySize);
+        dWins = (int)((dArmySize / aArmySize) * dArmySize);
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        addAWinningIndices(probableOutcomes, (int)aTank);
+        addDWinningIndices(probableOutcomes, (int)dTank);
+            
+        addAWinningIndices(probableOutcomes, (int)aArmor);
+        addDWinningIndices(probableOutcomes, (int)dArmor);
+        
+        addAWinningIndices(probableOutcomes, (int)aArtillery);
+        addDWinningIndices(probableOutcomes, (int)dArtillery);
+        
+        aWins += aBs * 100;
+        aWins += aDC * 50;
+        aWins += aF * 35;
+        aWins += aAC * 125;
+        aWins += aO * 10;
+        addAWinningIndices(probableOutcomes, aWins);
+        clearWins(aWins, dWins);
+        
+        dWins += dBs * 100;
+        dWins += dDC * 50;
+        dWins += dF * 35;
+        dWins += dAC * 125;
+        dWins += dO * 10;
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        aWins += aFp * 10;
+        aWins += aBp * 15;
+        aWins += aAh * 8;
+        aWins += aTh * 2;
+        addAWinningIndices(probableOutcomes, aWins);
+        clearWins(aWins, dWins);
+        
+        dWins += dFp * 10;
+        dWins += dBp * 15;
+        dWins += dAh * 8;
+        dWins += dTh * 2;
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        if(terrain == 1){
+            aWins += 2;
+        }else{
+            dWins += 2;
+        }
+        if(climate == 1){
+            aWins += 2;
+        }else{
+            dWins += 2;
+        }
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        if(mountains == 1) dWins += 10;
+        if(mountains == 2) dWins += 25;
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        if(aCounterAttack == 1) aWins = 10;
+        if(dCounterAttack == 1) dWins = 10;
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        aWins = roundNumber(20.0 * (aEquipment / (aEquipment + dEquipment)));
+        dWins = 20 - aWins;
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        if(guerrilaDamage == 0) aWins = 10;
+        if(guerrilaDamage == 2) dWins = 10;
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        aWins = roundNumber((7.0 * (aSupplyLine / (aSupplyLine + dSupplyLine))));
+        dWins = 7 - aWins;
+        addAWinningIndices(probableOutcomes, aWins);
+        addDWinningIndices(probableOutcomes, dWins);
+        clearWins(aWins, dWins);
+        
+        double aPhaseWins = 0; 
+        double dPhaseWins = 0;
+        String[] outs = new String[50];
+        int index = 0;
+        
+        for(int i = 0; i <= 5; i++){
+            outs[index] = ("Phase " + (i+1) + "\n");
+            index++;
+            attackSuccessful = chooseRandomResult(probableOutcomes);
+            if(attackSuccessful == true){
+                aPhaseWins++;
+                outs[index] = "Winner "+attacker+"\n";
+                index++;
+            }else{
+                dPhaseWins++;
+                outs[index] = "Winner "+defender+"\n";
+                index++;
+            }
+        }
+        
+        if(aPhaseWins > dPhaseWins)
+        {
+            outs[index] = attacker+" won the Battle of "+location+"\n";
+            index++;
+        }
+        if(dPhaseWins > aPhaseWins) 
+        {
+            outs[index] = defender+" won the Battle of "+location+"\n";
+            index++;
+        }
+        if(aPhaseWins == dPhaseWins)
+        {
+            outs[index] = "The Battle of "+location+" was a stalemate\n";
+            index++;
+        }
+        
+        double aMultiplier = (double)dWinCounter / (double)aWinCounter;
+        aMultiplier = 0.5885919102 * Math.log10(aMultiplier);
+        if(aMultiplier > 0.99) aMultiplier = 0.99;
+        double dMultiplier = (double)aWinCounter / (double)dWinCounter;
+        dMultiplier = 0.5885919102 * Math.log10(dMultiplier);
+        if(dMultiplier > 0.99) dMultiplier = 0.99;
+        
+        if(aArmySize > dArmySize)
+        {
+            double greater = aArmySize;
+            double lesser = dArmySize;
+            aCasualties = (Math.random() * aMultiplier) * lesser;
+            dCasualties = (Math.random() * dMultiplier) * lesser;
+            aCasualties += (greater - lesser) * Math.pow( 1/100, Math.random() );
+        }
+        else
+        {
+            double greater = dArmySize;
+            double lesser = aArmySize;
+            aCasualties = Math.random() * aMultiplier * lesser;
+            dCasualties = Math.random() * dMultiplier * lesser;
+            dCasualties += (greater - lesser) * Math.pow( 1/100, Math.random() );
+        }
+        
+        if(aTank > dTank)
+        {
+            double greater = aTank;
+            double lesser = dTank;
+            aTankCas = Math.random() * aMultiplier * (0.1+lesser);
+            dTankCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            aTankCas += (greater - lesser) * Math.pow(value, 4);
+        }
+        else
+        {
+            double greater = dTank;
+            double lesser = aTank;
+            aTankCas = Math.random() * aMultiplier * (0.1+lesser);
+            dTankCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            dTankCas += (greater - lesser) * Math.pow(value, 4);
+        }
+        
+        if(aArmor > dArmor)
+        {
+            double greater = aArmor;
+            double lesser = dArmor;
+            aArmorCas = Math.random() * aMultiplier * (0.1+lesser);
+            dArmorCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            aArmorCas += (greater - lesser) * Math.pow(value, 2);
+        }
+        else
+        {
+            double greater = dArmor;
+            double lesser = aArmor;
+            aArmorCas = Math.random() * aMultiplier * (0.1+lesser);
+            dArmorCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            dArmorCas += (greater - lesser) * Math.pow(value, 2);
+        }
+        
+        if(aArtillery > dArtillery)
+        {
+            double greater = aArtillery;
+            double lesser = dArtillery;
+            aArtilleryCas = Math.random() * aMultiplier * (0.1+lesser);
+            dArtilleryCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            aArtilleryCas += (greater - lesser) * Math.pow(value, 3);
+        }
+        else
+        {
+            double greater = dArtillery;
+            double lesser = aArtillery;
+            aArtilleryCas = Math.random() * aMultiplier * (0.1+lesser);
+            dArtilleryCas = Math.random() * dMultiplier * (0.1+lesser);
+            double value = Math.random();
+            dArtilleryCas += (greater - lesser) * Math.pow(value, 3);
+        }
+        
+        if(aFp > dFp)
+        {
+            double greater = aFp;
+            double lesser = dFp;
+            aFpCas = Math.random() * aMultiplier * (0.1+lesser);
+            dFpCas = Math.random() * dMultiplier * (0.1+lesser);
+            aFpCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        else
+        {
+            double greater = dFp;
+            double lesser = aFp;
+            aFpCas = Math.random() * aMultiplier * (0.1+lesser);
+            dFpCas = Math.random() * dMultiplier * (0.1+lesser);
+            dFpCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        if(aBp > dBp)
+        {
+            double greater = aBp;
+            double lesser = dBp;
+            aBpCas = Math.random() * aMultiplier * (0.1+lesser);
+            dBpCas = Math.random() * dMultiplier * (0.1+lesser);
+            aBpCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        else
+        {
+            double greater = dBp;
+            double lesser = aBp;
+            aBpCas = Math.random() * aMultiplier * (0.1+lesser);
+            dBpCas = Math.random() * dMultiplier * (0.1+lesser);
+            dBpCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        if(aAh > dAh)
+        {
+            double greater = aAh;
+            double lesser = dAh;
+            aAhCas = Math.random() * aMultiplier * (0.1+lesser);
+            dAhCas = Math.random() * dMultiplier * (0.1+lesser);
+            aAhCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        else
+        {
+            double greater = dAh;
+            double lesser = aAh;
+            aAhCas = Math.random() * aMultiplier * (0.1+lesser);
+            dAhCas = Math.random() * dMultiplier * (0.1+lesser);
+            dAhCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        if(aTh > dTh)
+        {
+            double greater = aTh;
+            double lesser = dTh;
+            aThCas = Math.random() * aMultiplier * (0.1+lesser);
+            dThCas = Math.random() * dMultiplier * (0.1+lesser);
+            aThCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        else
+        {
+            double greater = dTh;
+            double lesser = aTh;
+            aThCas = Math.random() * aMultiplier * (0.1+lesser);
+            dThCas = Math.random() * dMultiplier * (0.1+lesser);
+            dThCas += (greater - lesser) * Math.pow(Math.random(), 2);
+        }
+        
+        outs[index] = "\n";
+        index++;
+        outs[index] = "Casualties:\n";
+        index++;
+        
+        aCasualties = Math.abs(aCasualties); dCasualties = Math.abs(dCasualties); aTankCas = Math.abs(aTankCas); dTankCas = Math.abs(dTankCas);
+        aArmorCas = Math.abs(aArmorCas); dArmorCas = Math.abs(dArmorCas); aArtilleryCas = Math.abs(aArtilleryCas); dArtilleryCas = Math.abs(dArtilleryCas);
+        aFpCas = Math.abs(aFpCas); dFpCas = Math.abs(dFpCas); aBpCas = Math.abs(aBpCas); dBpCas = Math.abs(dBpCas); aAhCas = Math.abs(aAhCas); dAhCas = Math.abs(dAhCas);
+        aThCas = Math.abs(aThCas); dThCas = Math.abs(dThCas);
+        
+        outs[index] = "Unit Type                 Attackers  Defenders\n";index++;
+        outs[index] = "Infantry                  "+(int)(aCasualties*1000)+"    "+(int)(dCasualties*1000)+"\n";index++;
+        outs[index] = "Tanks                     "+(int)aTankCas+"    "+(int)dTankCas+"\n";index++;
+        outs[index] = "Armored Vehicles          "+(int)aArmorCas+"    "+(int)dArmorCas+"\n";index++;
+        outs[index] = "Artillery                 "+(int)aArtilleryCas+"    "+(int)dArtilleryCas+"\n";index++;
+        outs[index] = "Fighter/Attacker Aircraft "+(int)aFpCas+"    "+(int)dFpCas+"\n";index++;
+        outs[index] = "Bomber Planes             "+(int)aBpCas+"    "+(int)dBpCas+"\n";index++;
+        outs[index] = "Attack Helicopters        "+(int)aAhCas+"    "+(int)dAhCas+"\n";index++;
+        outs[index] = "Transport Helicopters     "+(int)aThCas+"    "+(int)dThCas+"\n";
+        return outs;
+    }
+    
+    String rattacker = "", rdefender = "", rlocation = "";
+    double raMilitarySpending = 0.0, rdMilitarySpending = 0.0;
+    double raArmySize = 0.0, rdArmySize = 0.0;
+    int raTank = 0, rdTank = 0, raArmor = 0, rdArmor = 0, raArtillery = 0, rdArtillery = 0;
+    int raBs = 0, rdBs = 0, raDC = 0, rdDC = 0, raAC = 0, rdAC = 0, raF = 0, rdF = 0, raO = 0, rdO = 0;
+    int raFp = 0, raBp = 0, raAh = 0, raTh = 0, rdFp = 0, rdBp = 0, rdAh = 0, rdTh = 0;
+    int rterrain = 0, rclimate = 0, rmountains = 0;
+    int raEquipment = 0, rdEquipment = 0;
+    int rguerrilaDamage = 0;
+    int raSupplyLine = 0, rdSupplyLine = 0;
+    int raCounterAttack = 0, rdCounterAttack = 0;
+    
+    Checkbox ter, clim, aCounter, dCounter;
+    JSlider aEquip, dEquip, aSupply, dSupply, mount, geurDamg;
+        
+    TextField atta, defe, loca, aSpe, dSpe, aAr, dAr, aTa, dTa, aArm, dArm;
+    TextField aArt, dArt, aFip, dFip, aBop, dBop, aAth, dAth, aTrh, dTrh, aBas, dBas;
+    TextField aDeCr, dDeCr, aFri, dFri, aAirC, dAirC, aOth, dOth;
+    Button finishButton;
+    TextArea outputText;
+    
+    public void init() {
+        
+        atta = new TextField(20);defe = new TextField(20);loca = new TextField(20);
+        aSpe = new TextField(20);dSpe = new TextField(20);aAr = new TextField(20);dAr = new TextField(20);
+        aTa = new TextField(20);dTa = new TextField(20);aArm = new TextField(20);dArm = new TextField(20);
+        aArt = new TextField(20);dArt = new TextField(20);aFip = new TextField(20);dFip = new TextField(20);
+        aBop = new TextField(20);dBop = new TextField(20);aAth = new TextField(20);dAth = new TextField(20);
+        aTrh = new TextField(20);dTrh = new TextField(20);aBas = new TextField(20);dBas = new TextField(20);
+        aDeCr = new TextField(20);dDeCr = new TextField(20);aFri = new TextField(20);dFri = new TextField(20);
+        aAirC = new TextField(20);dAirC = new TextField(20);aOth = new TextField(20);dOth = new TextField(20);
+        
+        ter = new Checkbox("Is the battle location terrain in the nation of the attacker?");
+        clim = new Checkbox("Is the battle location climate in the nation of the attacker?");
+        mount = new JSlider(0,2);geurDamg = new JSlider(0,2);
+        aCounter = new Checkbox("Does the battle see an attacker counterattack?");
+        dCounter = new Checkbox("Does the battle see a defender counterattack");
+        aEquip = new JSlider(1,10);dEquip = new JSlider(1,10);aSupply = new JSlider(1,10);dSupply = new JSlider(1,10);
+        finishButton = new Button("Run Simulation");
+        outputText = new TextArea(50,50);
+        
+        //aEquip, dEquip, aSupply, dSupply, mount, geurDamg
+        aEquip.setPaintTicks(true);dEquip.setPaintTicks(true);aSupply.setPaintTicks(true);dSupply.setPaintTicks(true);
+        mount.setPaintTicks(true);geurDamg.setPaintTicks(true);
+        aEquip.setPaintLabels(true);dEquip.setPaintLabels(true);aSupply.setPaintLabels(true);dSupply.setPaintLabels(true);
+        mount.setPaintLabels(true);geurDamg.setPaintLabels(true);
+        aEquip.setMajorTickSpacing(1);dEquip.setMajorTickSpacing(1);aSupply.setMajorTickSpacing(1);dSupply.setMajorTickSpacing(1);
+        mount.setMajorTickSpacing(1);geurDamg.setMajorTickSpacing(1);
+        
+        add(new Label("Enter the name of the attacking nation."));add(atta);
+        add(new Label("Enter the name of the defending nation."));add(defe);
+        add(new Label("What region or city is this fighting taking place?"));add(loca);
+        add(new Label("Give the attacker\'s annual military spending in millions of USD. Use a decimal if needed."));add(aSpe);
+        add(new Label("Give the defender\'s annual military spending in millions of USD. Use a decimal if needed."));add(dSpe);
+        add(new Label("Give the attacker's infantry numbers in thousands. Use a decimal if needed."));add(aAr);
+        add(new Label("Give the defender's infantry numbers in thousands. Use a decimal if needed."));add(dAr);
+        add(new Label("Give the attacker tank numbers"));add(aTa);
+        add(new Label("Give the defender tank numbers"));add(dTa);
+        add(new Label("Give the attacker armor numbers"));add(aArm);
+        add(new Label("Give the defender armor numbers"));add(dArm);
+        add(new Label("Give the attacker artillery numbers"));add(aArt);
+        add(new Label("Give the defender artillery numbers"));add(dArt);
+        add(new Label("Give the attacker fighter or attack plane numbers"));add(aFip);
+        add(new Label("Give the defender fighter or attack plane numbers"));add(dFip);
+        add(new Label("Give the attacker bomber plane numbers"));add(aBop);
+        add(new Label("Give the defender bomber plane numbers"));add(dBop);
+        add(new Label("Give the attacker attack helicopter numbers"));add(aAth);
+        add(new Label("Give the defender attack helicopter numbers"));add(dAth);
+        add(new Label("Give the attacker transport helicopter numbers"));add(aTrh);
+        add(new Label("Give the defender transport helicopter numbers"));add(dTrh);
+        add(new Label("Give the attacker battleship numbers"));add(aBas);
+        add(new Label("Give the defender battleship numbers"));add(dBas);
+        add(new Label("Give the attacker destroyer and cruiser numbers"));add(aDeCr);
+        add(new Label("Give the defender destroyer and cruiser numbers"));add(dDeCr);
+        add(new Label("Give the attacker frigate numbers"));add(aFri);
+        add(new Label("Give the defender frigate numbers"));add(dFri);
+        add(new Label("Give the attacker aircraft carrier numbers"));add(aAirC);
+        add(new Label("Give the defender aircraft carrier numbers"));add(dAirC);
+        add(new Label("Give the attacker numbers of other ships like patrol boats"));add(aOth);
+        add(new Label("Give the defender numbers of other ships like patrol boats")); add(dOth);
+        add(ter);add(clim);
+        add(new Label("Describe terrain. 0 for flat land, 1 for hilly, and 2 for mountainous."));add(mount);
+        add(new Label("Who uses guerrila warfare better? 0 means attackers, 2 is defenders, and 1 is neither side/equal."));add(geurDamg);
+        add(aCounter);add(dCounter);
+        add(new Label("Rate the quality of the attacker equipment."));add(aEquip);
+        add(new Label("Rate the quality of the defender equipment."));add(dEquip);
+        add(new Label("Rate the quality of the attacker supply lines."));add(aSupply);
+        add(new Label("Rate the quality of the defender supply lines."));add(dSupply);
+        add(finishButton);
+        add(outputText);
+        
+        atta.addActionListener(this);defe.addActionListener(this);loca.addActionListener(this);
+        aSpe.addActionListener(this);dSpe.addActionListener(this);
+        aAr.addActionListener(this);dAr.addActionListener(this);
+        aTa.addActionListener(this);dTa.addActionListener(this);
+        aArm.addActionListener(this);dArm.addActionListener(this);
+        aArt.addActionListener(this);dArt.addActionListener(this);
+        aFip.addActionListener(this);dFip.addActionListener(this);
+        aBop.addActionListener(this);dBop.addActionListener(this);
+        aAth.addActionListener(this);dAth.addActionListener(this);
+        aTrh.addActionListener(this);dTrh.addActionListener(this);
+        aBas.addActionListener(this);dBas.addActionListener(this);
+        aDeCr.addActionListener(this);dDeCr.addActionListener(this);
+        aFri.addActionListener(this);dFri.addActionListener(this);
+        aAirC.addActionListener(this);dAirC.addActionListener(this);
+        aOth.addActionListener(this);dOth.addActionListener(this);
+        ter.addItemListener(this);clim.addItemListener(this);mount.addChangeListener(this);
+        aEquip.addChangeListener(this);dEquip.addChangeListener(this);aSupply.addChangeListener(this);
+        dSupply.addChangeListener(this);geurDamg.addChangeListener(this);
+        finishButton.addActionListener(this);
+    }
+    
+    public void start() {
+                
+    }
+
+    // TODO overwrite start(), stop() and destroy() methods
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        if(e.getSource() == ter){
+            if(ter.getState() == true) rterrain = 1;
+            if(ter.getState() == false) rterrain = 0;
+        }
+        if(e.getSource() == clim){
+            if(clim.getState() == true) rclimate = 1;
+            if(clim.getState() == false) rclimate = 0;
+        }
+        if(e.getSource() == aCounter) {
+            if(aCounter.getState() == true) raCounterAttack = 1;
+            if(aCounter.getState() == false) raCounterAttack = 0;
+        }
+        if(e.getSource() == dCounter) {
+            if(dCounter.getState() == true) rdCounterAttack = 1;
+            if(dCounter.getState() == false) rdCounterAttack = 0;
+        }
+    }
+    
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        if(e.getSource() == aEquip) {
+            raEquipment = aEquip.getValue();
+        }
+        if(e.getSource() == dEquip) {
+            rdEquipment = dEquip.getValue();
+        }
+        if(e.getSource() == aSupply) {
+            raSupplyLine = aSupply.getValue();
+        }
+        if(e.getSource() == dSupply) {
+            rdSupplyLine = dSupply.getValue();
+        }
+        if(e.getSource() == mount) {
+            rmountains = mount.getValue();
+        }
+        if(e.getSource() == geurDamg) {
+            rguerrilaDamage = geurDamg.getValue();
+        }
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) throws UnsupportedOperationException {
+        if(e.getSource() == finishButton)
+        {
+            if(ter.getState() == true) rterrain = 1;
+            if(ter.getState() == false) rterrain = 0;
+            if(clim.getState() == true) rclimate = 1;
+            if(clim.getState() == false) rclimate = 0;
+            if(aCounter.getState() == true) raCounterAttack = 1;
+            if(aCounter.getState() == false) raCounterAttack = 0;
+            if(dCounter.getState() == true) rdCounterAttack = 1;
+            if(dCounter.getState() == false) rdCounterAttack = 0;
+            
+            raEquipment = aEquip.getValue();
+            rdEquipment = dEquip.getValue();
+            raSupplyLine = aSupply.getValue();
+            rdSupplyLine = dSupply.getValue();
+            rmountains = mount.getValue();
+            rguerrilaDamage = geurDamg.getValue();
+            
+            rattacker = atta.getText(); rdefender = defe.getText(); rlocation = loca.getText();
+            raMilitarySpending = Double.parseDouble(aSpe.getText());rdMilitarySpending = Double.parseDouble(dSpe.getText());
+            raArmySize = Double.parseDouble(aAr.getText()); rdArmySize = Double.parseDouble(dAr.getText());
+            raTank = Integer.parseInt(aTa.getText()); rdTank = Integer.parseInt(dTa.getText()); 
+            raArmor = Integer.parseInt(aArm.getText());rdArmor = Integer.parseInt(dArm.getText()); 
+            raArtillery = Integer.parseInt(aArt.getText()); rdArtillery = Integer.parseInt(dArt.getText());
+            raBs = Integer.parseInt(aBas.getText()); rdBs = Integer.parseInt(dBas.getText());
+            raDC = Integer.parseInt(aDeCr.getText()); rdDC = Integer.parseInt(dDeCr.getText());
+            raAC = Integer.parseInt(aAirC.getText()); rdAC = Integer.parseInt(dAirC.getText());
+            raF = Integer.parseInt(aFri.getText()); rdF = Integer.parseInt(dFri.getText());
+            raO = Integer.parseInt(aOth.getText()); rdO = Integer.parseInt(dOth.getText());
+            raFp = Integer.parseInt(aFip.getText()); raBp = Integer.parseInt(aBop.getText()); 
+            raAh = Integer.parseInt(aAth.getText()); raTh = Integer.parseInt(dTrh.getText()); 
+            rdFp = Integer.parseInt(dFip.getText()); rdBp = Integer.parseInt(dBop.getText()); 
+            rdAh = Integer.parseInt(dAth.getText()); rdTh = Integer.parseInt(dTrh.getText());
+        
+            
+            String[] result = run(rattacker,rdefender,rlocation,raMilitarySpending,rdMilitarySpending,raArmySize,rdArmySize,raTank,rdTank,raArmor,rdArmor,raArtillery,rdArtillery,raBs,rdBs,raDC,rdDC,raAC,rdAC,raF,rdF,raO,rdO,raFp,raBp,raAh,raTh,rdFp,rdBp,rdAh,rdTh,rterrain,rclimate,rmountains,raEquipment,rdEquipment,rguerrilaDamage,raSupplyLine,rdSupplyLine,raCounterAttack,rdCounterAttack);
+            String opText = "";
+            for(String yeeted : result) opText += yeeted;
+            opText = opText.replaceAll("null","");
+            outputText.setText(opText);
+        }
+        else
+        {
+            rattacker = atta.getText(); rdefender = defe.getText(); rlocation = loca.getText();
+            raMilitarySpending = Double.parseDouble(aSpe.getText());rdMilitarySpending = Double.parseDouble(dSpe.getText());
+            raArmySize = Double.parseDouble(aAr.getText()); rdArmySize = Double.parseDouble(dAr.getText());
+            raTank = Integer.parseInt(aTa.getText()); rdTank = Integer.parseInt(dTa.getText()); 
+            raArmor = Integer.parseInt(aArm.getText());rdArmor = Integer.parseInt(dArm.getText()); 
+            raArtillery = Integer.parseInt(aArt.getText()); rdArtillery = Integer.parseInt(dArt.getText());
+            raBs = Integer.parseInt(aBas.getText()); rdBs = Integer.parseInt(dBas.getText());
+            raDC = Integer.parseInt(aDeCr.getText()); rdDC = Integer.parseInt(dDeCr.getText());
+            raAC = Integer.parseInt(aAirC.getText()); rdAC = Integer.parseInt(dAirC.getText());
+            raF = Integer.parseInt(aFri.getText()); rdF = Integer.parseInt(dFri.getText());
+            raO = Integer.parseInt(aOth.getText()); rdO = Integer.parseInt(dOth.getText());
+            raFp = Integer.parseInt(aFip.getText()); raBp = Integer.parseInt(aBop.getText()); 
+            raAh = Integer.parseInt(aAth.getText()); raTh = Integer.parseInt(dTrh.getText()); 
+            rdFp = Integer.parseInt(dFip.getText()); rdBp = Integer.parseInt(dBop.getText()); 
+            rdAh = Integer.parseInt(dAth.getText()); rdTh = Integer.parseInt(dTrh.getText());
+        }
+    }
+}
